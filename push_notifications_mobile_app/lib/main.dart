@@ -125,6 +125,7 @@ class _MainAppState extends State<MainApp> {
     if (_token == null) return;
     await Clipboard.setData(ClipboardData(text: _token.toString()));
     if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Token copied to clipboard')),
     );
@@ -144,6 +145,8 @@ class _MainAppState extends State<MainApp> {
     final granted =
         _settings?.authorizationStatus == AuthorizationStatus.authorized ||
             _settings?.authorizationStatus == AuthorizationStatus.provisional;
+
+    print('token: $_token');
 
     return MaterialApp(
       home: Scaffold(
