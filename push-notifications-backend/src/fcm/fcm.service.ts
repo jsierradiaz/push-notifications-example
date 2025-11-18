@@ -22,10 +22,25 @@ export class FcmService {
   }
 
   private async getAccessToken(): Promise<string> {
-    // GOOGLE_APPLICATION_CREDENTIALS should point to the service account JSON
-    const auth = new GoogleAuth({
-      scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
-    });
+    // Check if credentials are provided as JSON string (for Docker/Cloud deployments)
+    const credsEnv = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+    let auth: GoogleAuth;
+
+    if (credsEnv && credsEnv.trim().startsWith('{')) {
+      // Parse JSON credentials directly
+      const credentials = JSON.parse(credsEnv);
+      auth = new GoogleAuth({
+        credentials,
+        scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
+      });
+    } else {
+      // Use file path (for local development)
+      auth = new GoogleAuth({
+        scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
+      });
+    }
+
     const client = await auth.getClient();
     const accessToken = await client.getAccessToken();
     const tokenString =
